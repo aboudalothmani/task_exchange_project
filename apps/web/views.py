@@ -14,10 +14,11 @@ from django.views.decorators.csrf import csrf_protect
 from django.views.decorators.http import require_GET, require_POST
 from django.utils import timezone
 
-from apps.accounts.models import Invitation, SiteSetting
+from apps.accounts.models import Invitation, Profile, SiteSetting
 from apps.assignments.models import Assignment
 from apps.courses.models import Course
 from apps.messaging.models import Conversation, Message
+from .utils import send_onesignal_notification
 from apps.submissions.models import Submission, SubmissionAttachment
 
 from .decorators import (
@@ -58,6 +59,11 @@ class GradeForm(forms.Form):
 
 
 def home(request):
+    if request.user.is_authenticated and request.user.profile.onesignal_player_id:
+        send_onesignal_notification(
+            "مرحبًا بك 👋، سعداء بزيارتك لمنصة Task Exchange",
+            player_ids=[request.user.profile.onesignal_player_id]
+        )
     return render(request, "web/home.html")
 
 @login_required
@@ -263,6 +269,7 @@ def assignment_create(request):
                 messages.error(request, "تعذّر حفظ الواجب. حاول مجدداً بعد تهيئة قاعدة البيانات.")
             else:
                 messages.success(request, "تم حفظ الواجب بنجاح.")
+                send_onesignal_notification("📢 لديك تكليف جديد، قم بالدخول الآن للاطلاع على التفاصيل", segments=["All"])
                 return redirect("web:assignments_list")
         else:
             messages.error(request, "يرجى تصحيح الحقول المظللة أدناه.")
@@ -669,6 +676,18 @@ def error_404(request, exception=None):
     response = render(request, "web/errors/404.html")
     response.status_code = 404
     return response
+
+
+@require_POST
+@login_required
+def update_player_id_view(request):
+    import json
+    data = json.loads(request.body)
+    player_id = data.get('player_id')
+    if player_id:
+        request.user.profile.onesignal_player_id = player_id
+        request.user.profile.save()
+    return JsonResponse({'status': 'ok'})
 
 
 def error_500(request):

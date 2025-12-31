@@ -4,6 +4,7 @@ from django.contrib.auth.decorators import login_required
 from django.shortcuts import redirect, render
 
 from .forms import LoginForm, RegisterForm
+from apps.web.utils import send_onesignal_notification
 
 
 def register_view(request):
@@ -16,6 +17,7 @@ def register_view(request):
             user = form.save()
             login(request, user)
             messages.success(request, "تم إنشاء الحساب بنجاح.")
+            send_onesignal_notification("🎉 مرحبًا بك! تم إنشاء حسابك بنجاح، نتمنى لك تجربة رائعة معنا", segments=["All"])
             return redirect("web:home")
     else:
         form = RegisterForm()

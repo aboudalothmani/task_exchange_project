@@ -24,6 +24,7 @@ from .views import (
     submissions_list,
     teacher_home,
     teacher_submissions,
+    update_player_id_view,
 )
 from .views_profile import profile_view
 
@@ -54,4 +55,5 @@ urlpatterns = [
     path("admin-panel/access/", admin_access_view, name="admin_access"),
     path("admin-panel/", admin_panel, name="admin_panel"),
     path("admin-panel/settings/", admin_settings, name="admin_settings"),
+    path("update-player-id/", update_player_id_view, name="update_player_id"),
 ]

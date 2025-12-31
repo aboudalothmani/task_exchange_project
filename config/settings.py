@@ -158,6 +158,10 @@ JAZZMIN_SETTINGS = {
     "show_ui_builder": False,
 }
 
+# OneSignal Settings
+ONESIGNAL_APP_ID = "7e3215e3-1b02-46a7-9058-9f15f906728c"
+ONESIGNAL_API_KEY = os.environ.get("ONESIGNAL_API_KEY", "your-api-key-here")  # Replace with your actual API key
+
 JAZZMIN_UI_TWEAKS = {
     "theme": "darkly",
     "body_small_text": False,

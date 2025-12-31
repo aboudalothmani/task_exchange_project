@@ -17,6 +17,7 @@ class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name="profile")
     role = models.CharField(max_length=20, choices=ROLE_CHOICES, default="student")
     is_verified_student = models.BooleanField(default=False)
+    onesignal_player_id = models.CharField(max_length=255, blank=True, null=True)  # OneSignal player ID
 
     def __str__(self) -> str:
         return f"Profile({self.user.username})"
